@@ -1,0 +1,81 @@
+.nodeWrapper {
+    position: relative;
+    width: 100%;
+    min-height: 20px;
+    max-width: 300px;
+  }
+  
+  .handlesWrapper {
+    display: flex;
+    width: 100%;
+  }
+  
+  .handlesColumn {
+    width: 50%;
+    position: relative;
+  }
+  
+  .handleCell {
+    width: 20px;
+    position: relative;
+    margin-left: 0.5rem;
+  }
+  
+  .outputHandleCell {
+    vertical-align: middle;
+    text-align: center;
+    width: 0;
+    margin-left: 0.5rem;
+  }
+  
+  .handleWrapper {
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .handleLabel {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    display: inline-block;
+    position: relative;
+    z-index: 1000;
+  }
+  
+  .handle {
+    width: 0.8rem !important;
+    height: 0.8rem !important;
+    background: #555 !important;
+    position: relative;
+    z-index: 1001 !important;
+    top: auto;
+    right: auto;
+    transform: none;
+  }
+  
+  .handle:hover {
+    background-color: #777;
+  }
+  
+  .collapsedHandleInput {
+    position: absolute !important;
+    top: 50% !important;
+    left: 0 !important;
+    transform: translateY(-50%) !important;
+  }
+  
+  .collapsedHandleOutput {
+    position: absolute !important;
+    top: 50% !important;
+    right: 4px !important;
+    transform: translateY(-50%) !important;
+  }
+  
+  .outputDisplayNodeWrapper {
+    position: relative;
+  }

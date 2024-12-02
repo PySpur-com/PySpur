@@ -5,7 +5,6 @@ const NodeOutputDisplay = (props) => {
     const { node } = props;
     const nodeID = node?.id;
     const output = node?.data?.run;
-    console.log('NodeOutputDisplay:', nodeID, output);
 
     return (
         <div>

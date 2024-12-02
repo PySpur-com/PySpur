@@ -44,6 +44,9 @@ class RunStatusResponseSchema(BaseModel):
     tasks: List[Dict[str, Any]]
     outputs: Optional[Dict[str, Any]]
     output_file_id: Optional[str]
+    workflow_id: str
+    workflow_version_id: int
+    workflow_version: WorkflowVersionResponseSchema
 
 
 class BatchRunRequestSchema(BaseModel):

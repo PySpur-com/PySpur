@@ -32,6 +32,12 @@ def list_runs(
     runs = query.order_by(RunModel.start_time.desc()).limit(last_k).all()
     return runs
 
+@router.get("/{run_id}/", response_model=RunResponseSchema)
+def get_run(run_id: str, db: Session = Depends(get_db)):
+    run = db.query(RunModel).filter(RunModel.id == run_id).first()
+    if not run:
+        raise HTTPException(status_code=404, detail="Run not found")
+    return run
 
 @router.get("/{run_id}/status/", response_model=RunStatusResponseSchema)
 def get_run_status(run_id: str, db: Session = Depends(get_db)):
@@ -79,4 +85,7 @@ def get_run_status(run_id: str, db: Session = Depends(get_db)):
         outputs=combined_task_outputs,
         tasks=tasks_meta,
         output_file_id=output_file_id,
+        workflow_id=run.workflow_id,
+        workflow_version_id=run.workflow_version_id,
+        workflow_version=run.workflow_version,
     )

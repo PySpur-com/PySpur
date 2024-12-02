@@ -14,7 +14,7 @@ import {
 import { Icon } from "@iconify/react";
 import usePartialRun from '../../hooks/usePartialRun';
 
-const BaseNode = ({ isCollapsed, setIsCollapsed, id, data = {}, children, style = {}, isInputNode = false }) => {
+const BaseNode = ({ isCollapsed, setIsCollapsed, handleOpenModal, id, data = {}, children, style = {}, isInputNode = false }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const [isTooltipHovered, setIsTooltipHovered] = useState(false);
@@ -362,6 +362,17 @@ const BaseNode = ({ isCollapsed, setIsCollapsed, id, data = {}, children, style 
             >
               <Icon className="text-default-500" icon="solar:copy-linear" width={22} />
             </Button>
+            {/* View Output Button */}
+            {handleOpenModal && (
+              <Button
+                isIconOnly
+                radius="full"
+                variant="light"
+                onPress={handleOpenModal}
+              >
+                <Icon className="text-default-500" icon="solar:eye-linear" width={22} />
+              </Button>
+            )}
           </div>
         </Card>
       )}

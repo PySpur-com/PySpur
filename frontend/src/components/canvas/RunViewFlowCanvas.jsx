@@ -13,31 +13,27 @@ import {
   updateNodeData,
   setNodes,
 } from '../../store/flowSlice';
-// import ConnectionLine from './ConnectionLine';
 import NodeSidebar from '../nodes/nodeSidebar/NodeSidebar';
 import { Dropdown, DropdownMenu, DropdownSection, DropdownItem } from '@nextui-org/react';
-import DynamicNode from '../nodes/DynamicNode';
 import { v4 as uuidv4 } from 'uuid';
 import { addNodeBetweenNodes } from './AddNodePopoverCanvas';
-import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'; // Import the new hook
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'; 
 import CustomEdge from './edges/CustomEdge';
 import { getHelperLines } from '../../utils/helperLines';
 import HelperLinesRenderer from '../HelperLines';
 import useCopyPaste from '../../utils/useCopyPaste';
 import { useModeStore } from '../../store/modeStore';
-import { initializeFlow } from '../../store/flowSlice'; // Import the new action
-// Import the new API function
+import { initializeFlow, setNodeOutputs } from '../../store/flowSlice'; 
 import InputNode from '../nodes/InputNode';
-import { useSaveWorkflow } from '../../hooks/useSaveWorkflow';
-import LoadingSpinner from '../LoadingSpinner'; // Updated import
+import LoadingSpinner from '../LoadingSpinner'; 
 import ConditionalNode from '../nodes/ConditionalNode';
 import dagre from '@dagrejs/dagre';
-
+import OutputDisplayNode from '../nodes/OutputDispalyNode';
 
 const useNodeTypes = ({ nodeTypesConfig }) => {
   const nodeTypes = useMemo(() => {
     if (!nodeTypesConfig) return {};
-    return Object.keys(nodeTypesConfig).reduce((acc, category) => {
+    const types = Object.keys(nodeTypesConfig).reduce((acc, category) => {
       nodeTypesConfig[category].forEach(node => {
         if (node.name === 'InputNode') {
           acc[node.name] = InputNode;
@@ -45,12 +41,15 @@ const useNodeTypes = ({ nodeTypesConfig }) => {
           acc[node.name] = ConditionalNode;
         } else {
           acc[node.name] = (props) => {
-            return <DynamicNode {...props} type={node.name} />;
+            return <OutputDisplayNode {...props} type={node.name} />;
           };
         }
       });
       return acc;
     }, {});
+
+    return types;
+  
   }, [nodeTypesConfig]);
 
   const isLoading = !nodeTypesConfig;
@@ -62,8 +61,8 @@ const edgeTypes = {
 };
 
 // Create a wrapper component that includes ReactFlow logic
-const FlowCanvasContent = (props) => {
-  const { workflowData, workflowID } = props;
+const RunViewFlowCanvasContent = (props) => {
+  const { workflowData, workflowID, nodeOutputs } = props;
 
   const dispatch = useDispatch();
 
@@ -88,6 +87,9 @@ const FlowCanvasContent = (props) => {
         }
       }
       dispatch(initializeFlow({ nodeTypes: nodeTypesConfig, ...workflowData, workflowID }));
+      console.log('Node Outputs:', nodeOutputs);
+      dispatch(setNodeOutputs(nodeOutputs));
+
     }
 
   }, [dispatch, workflowData, workflowID]);
@@ -98,7 +100,6 @@ const FlowCanvasContent = (props) => {
   const edges = useSelector((state) => state.flow.edges);
   const selectedNodeID = useSelector((state) => state.flow.selectedNode);
 
-  const saveWorkflow = useSaveWorkflow([nodes, edges], 10000); // 10 second delay
 
   // Manage reactFlowInstance locally
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
@@ -377,8 +378,6 @@ const FlowCanvasContent = (props) => {
     sortedNodes = sortedNodes.reverse();
 
     // Calculate weights for nodes and edges
-    // Each node weight is the maximum of the incoming edges' weights
-    // Each edge weight is twice its source node's weight
     sortedNodes.forEach(node => {
       const incomingEdges = edges.filter(edge => edge.target === node.id);
       let maxIncomingWeight = -Infinity;
@@ -442,11 +441,6 @@ const FlowCanvasContent = (props) => {
   // Use the custom hook for keyboard shortcuts
   useKeyboardShortcuts(selectedNodeID, nodes, dispatch);
 
-  const { cut, copy, paste, bufferedNodes } = useCopyPaste();
-
-  // const canCopy = nodes.some(({ selected }) => selected);
-  // const canPaste = bufferedNodes.length > 0;
-
   // Add this hook - it will handle the keyboard shortcuts automatically
   useCopyPaste();
 
@@ -455,9 +449,7 @@ const FlowCanvasContent = (props) => {
     hideAttribution: true
   };
 
-
   const mode = useModeStore((state) => state.mode);
-
 
   // Add this memoized nodes with mode
   const nodesWithMode = useMemo(() => {
@@ -582,9 +574,6 @@ const FlowCanvasContent = (props) => {
                 vertical={helperLines.vertical}
               />
             )}
-
-
-
             <Operator handleLayout={handleLayout}/>
           </ReactFlow>
         </div>
@@ -602,12 +591,12 @@ const FlowCanvasContent = (props) => {
 };
 
 // Main component that provides the ReactFlow context
-const FlowCanvas = ({ workflowData, workflowID }) => {
+const RunViewFlowCanvas = ({ workflowData, workflowID, nodeOutputs }) => {
   return (
     <ReactFlowProvider>
-      <FlowCanvasContent workflowData={workflowData} workflowID={workflowID} />
+      <RunViewFlowCanvasContent workflowData={workflowData} workflowID={workflowID} nodeOutputs={nodeOutputs} />
     </ReactFlowProvider>
   );
 };
 
-export default FlowCanvas;
+export default RunViewFlowCanvas;

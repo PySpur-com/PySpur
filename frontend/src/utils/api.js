@@ -67,6 +67,17 @@ export const getRunStatus = async (runID) => {
   }
 };
 
+export const getRun = async (runID) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/run/${runID}/`);
+    console.log('Run Data:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting run:', error);
+    throw error;
+  }
+};
+
 export const getWorkflows = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/wf/`);
@@ -158,6 +169,17 @@ export const getAllRuns = async (lastK = 10, parentOnly = true, runType = "batch
     return response.data;
   } catch (error) {
     console.error('Error fetching runs:', error);
+    throw error;
+  }
+}
+
+export const getWorkflowRuns = async (workflowID) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/wf/${workflowID}/runs/`);
+    return response.data;
+  }
+  catch (error) {
+    console.error('Error fetching workflow runs:', error);
     throw error;
   }
 }
